@@ -8,14 +8,32 @@ import java.net.URLConnection;
 import java.util.Scanner;
 
 public class MoneyCalculator {
-
+    private double amount;
+    private double exchangerate;
+    
     public static void main(String[] args) throws IOException {
+        MoneyCalculator moneycalculator = new MoneyCalculator();
+        moneycalculator.control();
+    }
+
+    private void control() throws Exception {
+        input();
+        process();
+        output();
+    }
+
+    private void input() {
         System.out.println("Introduce una cantidad de dólares: ");
         Scanner scanner = new Scanner(System.in);
-        double amount = scanner.nextDouble();
-        double exchangerate = getExchangeRate("USD","EUR");
-        System.out.println(amount + " dolares equivalen a " 
-                + amount*exchangerate + " euros");        
+        amount = Double.parseDouble(scanner.next());
+    }
+
+    private void process() throws IOException {
+        exchangerate = getExchangeRate("USD","EUR");
+    }
+
+    private void output() {
+        System.out.println(amount + " USD equivalen a " + amount*exchangerate + " €");
     }
     
     private static double getExchangeRate(String from, String to) throws IOException {
@@ -30,6 +48,6 @@ public class MoneyCalculator {
             String line1 = line.substring(line.indexOf(to)+12, line.indexOf("}"));
             return Double.parseDouble(line1);
         }
-    }    
+    }
     
 }
