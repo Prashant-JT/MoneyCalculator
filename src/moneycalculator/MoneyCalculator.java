@@ -11,7 +11,7 @@ public class MoneyCalculator {
     private double amount;
     private double exchangerate;
     
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         MoneyCalculator moneycalculator = new MoneyCalculator();
         moneycalculator.control();
     }
