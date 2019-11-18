@@ -58,4 +58,5 @@ public class MoneyCalculator {
             return Double.parseDouble(line1);
         }
     }
+    
 }
