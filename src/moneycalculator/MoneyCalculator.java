@@ -1,66 +1,84 @@
 package moneycalculator;
 
+import moneycalculator.model.Money;
+import moneycalculator.model.ExchangeRate;
+import moneycalculator.model.Currency;
+import moneycalculator.model.CurrencyList;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.Scanner;
 
 public class MoneyCalculator {
-    private double amount;
-    private Map<String, Currency> currencies = new HashMap<>();
-    private Currency currencyFrom;
+    private CurrencyList currencyList;
+    private Money money;
     private Currency currencyTo;
-    private double exchangeRate;
+    private ExchangeRate exchangeRate;
 
     public MoneyCalculator(){
-        currencies.put("USD", new Currency("USD", "Dólar americano", "$"));
-        currencies.put("EUR", new Currency("EUR", "Euros", "€"));
-        currencies.put("GBP", new Currency("GBP", "Libras Esterlinas", "£"));
+        this.currencyList = new CurrencyList();
     }
     
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         MoneyCalculator moneyCalculator = new MoneyCalculator();
         moneyCalculator.execute();
     }
     
-    private void execute() throws IOException {
+    private void execute() throws Exception {
         input();
         process();
         output();
     }
     
     private void input(){
-        System.out.println("Introduce una cantidad: ");
+        System.out.println("Introduzca una cantidad: ");
         Scanner scanner = new Scanner(System.in);
-        amount = Double.parseDouble(scanner.next());
+        double amount = Double.parseDouble(scanner.next());
         
-        System.out.println("Introduzca divisa origen");
-        currencyFrom = currencies.get(scanner.next().toUpperCase());   
+        while (true) {
+            System.out.println("Introduzca código divisa origen");
+            Currency currency = currencyList.get(scanner.next());
+            money = new Money(amount, currency);
+            if (currency != null) break;
+            System.out.println("Divisa no conocida");
+        }
 
-        System.out.println("Introduzca divisa destino");
-        currencyTo = currencies.get(scanner.next().toUpperCase());
+        while (true) {
+            System.out.println("Introduzca codigo divisa destino");
+            currencyTo = currencyList.get(scanner.next());
+            if (currencyTo != null) break;
+            System.out.println("Divisa no conocida");
+        }
     }
     
-    private void process() throws IOException{
-        this.exchangeRate = getExchangeRate(currencyFrom.getCode(), currencyTo.getCode());
+    private void process() throws Exception{
+        exchangeRate = getExchangeRate(money.getCurrency(), currencyTo);
     }
     
     private void output(){
-        System.out.println(amount + " " + currencyFrom.getSymbol() + " equivalen a: " + amount*exchangeRate + " " + currencyTo.getSymbol());
+        System.out.println(money.getAmount() + " "
+                + money.getCurrency().getSymbol() + " equivalen a: " 
+                + exchangeRate.getRate() * money.getAmount() + " " 
+                + currencyTo.getSymbol());
     }
     
-    private static double getExchangeRate(String from, String to) throws IOException{
-        URL url = new URL("http://free.currencyconverterapi.com/api/v5/convert?q=" + from + "_" + to + "&compact=y&apiKey=1eb50c98f4a50de7d844");
-        MoneyCalculator moneyCalculator = new MoneyCalculator();
+    private static ExchangeRate getExchangeRate(Currency from, Currency to) throws IOException{
+        URL url = new URL("http://free.currencyconverterapi.com/api/v5/convert?q=" + 
+                from.getCode() + "_" + to.getCode() + "&compact=y");
         URLConnection connection = url.openConnection();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))){
+        try (BufferedReader reader = 
+                new BufferedReader(
+                        new InputStreamReader(connection.getInputStream()))) {
             String line = reader.readLine();
-            String line1 = line.substring(line.indexOf(to) + 12, line.indexOf("}"));
-            return Double.parseDouble(line1);
+            System.out.println(line);
+            String line1 = line.substring(line.indexOf(to.getCode())+12, line.indexOf("}"));
+            return new ExchangeRate(from, to, 
+                    LocalDate.of(2018, Month.MAY, 24), 
+                    Double.parseDouble(line1));
         }
     }
     

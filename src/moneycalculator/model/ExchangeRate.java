@@ -1,4 +1,4 @@
-package moneycalculator;
+package moneycalculator.model;
 
 import java.time.LocalDate;
 
@@ -8,11 +8,11 @@ public class ExchangeRate {
     private final double rate;
     private final LocalDate date;
 
-    public ExchangeRate(Currency from, Currency to, double rate, LocalDate date) {
+    public ExchangeRate(Currency from, Currency to, LocalDate date, double rate) {
         this.from = from;
         this.to = to;
-        this.rate = rate;
         this.date = date;
+        this.rate = rate;
     }
 
     public Currency getFrom() {
