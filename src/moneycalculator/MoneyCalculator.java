@@ -65,16 +65,15 @@ public class MoneyCalculator {
                 + exchangeRate.getRate() * money.getAmount() + " " 
                 + currencyTo.getSymbol());
     }
-    
+
     private static ExchangeRate getExchangeRate(Currency from, Currency to) throws IOException{
         URL url = new URL("http://free.currencyconverterapi.com/api/v5/convert?q=" + 
-                from.getCode() + "_" + to.getCode() + "&compact=y");
+                from.getCode() + "_" + to.getCode() + "&compact=y&apiKey=7e627ef1f163c48b0e71");
         URLConnection connection = url.openConnection();
         try (BufferedReader reader = 
                 new BufferedReader(
                         new InputStreamReader(connection.getInputStream()))) {
             String line = reader.readLine();
-            System.out.println(line);
             String line1 = line.substring(line.indexOf(to.getCode())+12, line.indexOf("}"));
             return new ExchangeRate(from, to, 
                     LocalDate.of(2018, Month.MAY, 24), 
