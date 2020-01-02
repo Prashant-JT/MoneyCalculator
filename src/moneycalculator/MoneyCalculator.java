@@ -1,5 +1,8 @@
 package moneycalculator;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import moneycalculator.model.Money;
 import moneycalculator.model.ExchangeRate;
 import moneycalculator.model.Currency;
@@ -66,7 +69,7 @@ public class MoneyCalculator {
                 + currencyTo.getSymbol());
     }
 
-    private static ExchangeRate getExchangeRate(Currency from, Currency to) throws IOException{
+    private static ExchangeRate getExchangeRate(Currency from, Currency to) throws IOException {
         URL url = new URL("http://free.currencyconverterapi.com/api/v5/convert?q=" + 
                 from.getCode() + "_" + to.getCode() + "&compact=y&apiKey=7e627ef1f163c48b0e71");
         URLConnection connection = url.openConnection();
@@ -74,10 +77,11 @@ public class MoneyCalculator {
                 new BufferedReader(
                         new InputStreamReader(connection.getInputStream()))) {
             String line = reader.readLine();
-            String line1 = line.substring(line.indexOf(to.getCode())+12, line.indexOf("}"));
-            return new ExchangeRate(from, to, 
-                    LocalDate.of(2018, Month.MAY, 24), 
-                    Double.parseDouble(line1));
+            JsonParser parser = new JsonParser(); 
+            JsonObject gsonObj = parser.parse(line).getAsJsonObject();
+            JsonPrimitive ratePrimitive = gsonObj.getAsJsonPrimitive("val");
+            double rate = ratePrimitive.getAsDouble();
+            return new ExchangeRate(from, to, LocalDate.of(2019, Month.MAY, 20), rate);
         }
     }
     
