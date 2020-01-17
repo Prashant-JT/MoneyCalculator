@@ -5,14 +5,12 @@ import java.time.LocalDate;
 public class ExchangeRate {
     private final Currency from;
     private final Currency to;
-    private final double rate;
-    private final LocalDate date;
+    private final double amount;
 
-    public ExchangeRate(Currency from, Currency to, LocalDate date, double rate) {
+    public ExchangeRate(Currency from, Currency to, double amount) {
         this.from = from;
         this.to = to;
-        this.date = date;
-        this.rate = rate;
+        this.amount = amount;
     }
 
     public Currency getFrom() {
@@ -23,12 +21,8 @@ public class ExchangeRate {
         return to;
     }
     
-    public double getRate() {
-        return rate;
-    }
-
-    public LocalDate getLocalDate() {
-        return date;
+    public double getAmount() {
+        return amount;
     }
     
 }
