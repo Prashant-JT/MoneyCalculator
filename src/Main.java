@@ -1,5 +1,3 @@
-
-
 import moneycalculator.control.CalculateCommand;
 import moneycalculator.persistence.CurrencyListLoader;
 import moneycalculator.persistence.ExchangeRateLoader;
